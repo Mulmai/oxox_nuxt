@@ -53,12 +53,12 @@
                             </template>
                         </v-text-field>
 
-                        <v-select required dense outlined class="p-2" :items="choices.gender" item-text="name" item-value="id" label="เพศ" v-model="form.gender">
+                        <v-select v-if="showGenderSelector" required dense outlined class="p-2" :items="genderChoicesForType" item-text="name" item-value="id" label="เพศ" v-model="form.gender">
                             <template v-slot:prepend-inner>
                                 <span class="em em-female_sign form-emoji" aria-hidden="true"></span>
                             </template>
                         </v-select>
-                        <v-text-field v-if="form.gender == 5" dense outlined class="p-2" label="เพศอื่นๆ" v-model="form.gender_ect">
+                        <v-text-field v-if="showGenderSelector && isOtherGenderSelected" dense outlined class="p-2" label="เพศอื่นๆ" v-model="form.gender_ect">
                             <template v-slot:prepend-inner>
                                 <span class="em em-male_sign form-emoji" aria-hidden="true"></span>
                             </template>
@@ -86,7 +86,7 @@
                             </template>
                         </v-text-field>
 
-                        <v-text-field required dense outlined class="p-2" type="date" label="วันเกิด" v-model="form.birth_date">
+                        <v-text-field dense outlined class="p-2" type="date" label="วันเกิด" v-model="form.birth_date">
                             <template v-slot:prepend-inner>
                                 <span class="em em-spiral_calendar_pad form-emoji" aria-hidden="true"></span>
                             </template>
@@ -225,6 +225,90 @@ class Farm extends Vue {
     toothVal: any = {}
     SEX: any = this.$route.query.type
 
+    get oxType() {
+        return String(this.$route.query.type || '')
+    }
+
+    get showGenderSelector() {
+        return this.isNewbornType(this.oxType)
+    }
+
+    get genderChoicesForType() {
+        const genders: any[] = Array.isArray(this.choices.gender) ? this.choices.gender : []
+        if (!this.showGenderSelector) {
+            return genders
+        }
+        return genders.filter((item: any) => this.isMaleGender(item) || this.isFemaleGender(item))
+    }
+
+    get isOtherGenderSelected() {
+        const selected: any = _.find(this.choices.gender, { id: this.form.gender })
+        return this.isOtherGender(selected)
+    }
+
+    isNewbornType(type: string) {
+        return /แรกเกิด/.test(type)
+    }
+
+    isMaleParentType(type: string) {
+        return /พ่อพันธุ์/.test(type)
+    }
+
+    isFemaleParentType(type: string) {
+        return /แม่พันธุ์/.test(type)
+    }
+
+    isMaleGender(item: any) {
+        const name = String(item?.name || '')
+        return /เพศผู้|ผู้|male|ชาย/i.test(name)
+    }
+
+    isFemaleGender(item: any) {
+        const name = String(item?.name || '')
+        return /เพศเมีย|เมีย|female|หญิง/i.test(name)
+    }
+
+    isOtherGender(item: any) {
+        const name = String(item?.name || '')
+        return /อื่น/.test(name)
+    }
+
+    applyGenderByType() {
+        const genders: any[] = Array.isArray(this.choices.gender) ? this.choices.gender : []
+        if (!genders.length) {
+            return
+        }
+
+        if (this.isMaleParentType(this.oxType)) {
+            const male: any = _.find(genders, (item: any) => this.isMaleGender(item))
+            if (male) {
+                this.form.gender = male.id
+                this.form.gender_ect = ''
+            }
+            return
+        }
+
+        if (this.isFemaleParentType(this.oxType)) {
+            const female: any = _.find(genders, (item: any) => this.isFemaleGender(item))
+            if (female) {
+                this.form.gender = female.id
+                this.form.gender_ect = ''
+            }
+            return
+        }
+
+        if (this.showGenderSelector) {
+            const validIds = this.genderChoicesForType.map((item: any) => item.id)
+            if (this.form.gender && !validIds.includes(this.form.gender)) {
+                this.form.gender = null
+                this.form.gender_ect = ''
+            }
+            return
+        }
+
+        this.form.gender_ect = ''
+    }
+
     async getEnv() {
 
         this.choices = {
@@ -244,6 +328,7 @@ class Farm extends Vue {
         this.isPageLoading = true
         try {
             await this.getEnv();
+            this.applyGenderByType();
             await this.getOxen();
         } finally {
             this.isPageLoading = false

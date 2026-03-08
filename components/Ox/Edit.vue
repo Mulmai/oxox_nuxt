@@ -56,7 +56,7 @@
                         <span class="em em-label form-emoji" aria-hidden="true"></span>
                     </template>
                 </v-text-field>
-                <v-select dense class="p-2" outlined :items="choices.gender" item-text="name" item-value="id" label="เพศ" v-model="form.gender">
+                <v-select dense class="p-2" outlined :items="genderChoicesForType" item-text="name" item-value="id" label="เพศ" v-model="form.gender">
                     <template v-slot:prepend-inner>
                         <span class="em em-female_sign form-emoji" aria-hidden="true"></span>
                     </template>
@@ -277,6 +277,77 @@ class Farm extends Vue {
     breedStatusOptions: any[] = ['ผสม', 'ไม่ผสม']
     pregnancyStatusOptions: any[] = ['ท้อง', 'ไม่ท้อง']
 
+    get showGenderSelector() {
+        return this.isNewbornType(String(this.form.sex || ''))
+    }
+
+    get genderChoicesForType() {
+        const genders: any[] = Array.isArray(this.choices.gender) ? this.choices.gender : []
+        if (!this.showGenderSelector) {
+            return genders
+        }
+        return genders.filter((item: any) => this.isMaleGender(item) || this.isFemaleGender(item))
+    }
+
+    isNewbornType(type: string) {
+        return /แรกเกิด/.test(type)
+    }
+
+    isMaleParentType(type: string) {
+        return /พ่อพันธุ์/.test(type)
+    }
+
+    isFemaleParentType(type: string) {
+        return /แม่พันธุ์/.test(type)
+    }
+
+    isMaleGender(item: any) {
+        const name = String(item?.name || '')
+        return /เพศผู้|ผู้|male|ชาย/i.test(name)
+    }
+
+    isFemaleGender(item: any) {
+        const name = String(item?.name || '')
+        return /เพศเมีย|เมีย|female|หญิง/i.test(name)
+    }
+
+    applyGenderByType() {
+        const genders: any[] = Array.isArray(this.choices.gender) ? this.choices.gender : []
+        const type = String(this.form.sex || '')
+        if (!genders.length || !type) {
+            return
+        }
+
+        if (this.isMaleParentType(type)) {
+            const male: any = _.find(genders, (item: any) => this.isMaleGender(item))
+            if (male) {
+                this.form.gender = male.id
+            }
+            this.form.gender_ect = ''
+            return
+        }
+
+        if (this.isFemaleParentType(type)) {
+            const female: any = _.find(genders, (item: any) => this.isFemaleGender(item))
+            if (female) {
+                this.form.gender = female.id
+            }
+            this.form.gender_ect = ''
+            return
+        }
+
+        if (this.showGenderSelector) {
+            const validIds = this.genderChoicesForType.map((item: any) => item.id)
+            if (this.form.gender && !validIds.includes(this.form.gender)) {
+                this.form.gender = null
+                this.form.gender_ect = ''
+            }
+            return
+        }
+
+        this.form.gender_ect = ''
+    }
+
     async getEnv() {
 
         this.choices = {
@@ -290,6 +361,7 @@ class Farm extends Vue {
 
     async getOxen() {
         this.form = await Core.getHttp(`/api/v1/ox/ox/${this.currentId}/`)
+        this.applyGenderByType()
     }
 
     async created() {
