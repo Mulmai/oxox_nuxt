@@ -7,22 +7,31 @@
       item-text="name"
       item-value="id"
       label="การเหนี่ยวนำการเป็นสัด"
-      prepend-inner-icon="mdi-human-male-female"
       v-model="form.is_induction"
-    />
+    >
+      <template v-slot:prepend-inner>
+        <span class="em em-link form-emoji" aria-hidden="true"></span>
+      </template>
+    </v-select>
     <v-text-field
       v-if="form.is_induction == 'เหนี่ยวนำ'"
       label="วิธีที่ใช้เหนี่ยวนำ(ระบุ)"
       v-model="form.how_induction"
-      prepend-inner-icon="mdi-text"
-    />
+    >
+      <template v-slot:prepend-inner>
+        <span class="em em-memo form-emoji" aria-hidden="true"></span>
+      </template>
+    </v-text-field>
     <v-text-field
       v-if="form.is_induction == 'เหนี่ยวนำ'"
       type="date"
       label="วัน/เดือน/ปี ที่เหนี่ยวนำ"
       v-model="form.date_induction"
-      prepend-inner-icon="mdi-calendar"
-    />
+    >
+      <template v-slot:prepend-inner>
+        <span class="em em-calendar form-emoji" aria-hidden="true"></span>
+      </template>
+    </v-text-field>
     <v-btn
       @click="saveStepOne()"
       class="w-full"
@@ -49,7 +58,7 @@ import { Ox } from "@/vuexes/ox";
 @Component({
   components: {},
 })
-export default class Food extends Vue {
+class Food extends Vue {
   breed: any = Ox.currentBreed;
   currentId: any = this.$route.query.id;
   response: boolean = true;
@@ -88,7 +97,14 @@ export default class Food extends Vue {
     return Web.convertDate(date);
   }
 }
+
+export default Food
 </script>
 
-<style>
+<style scoped>
+@import url("https://emoji-css.afeld.me/emoji.css");
+
+.form-emoji {
+  margin-right: 4px;
+}
 </style>

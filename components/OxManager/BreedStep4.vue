@@ -4,23 +4,32 @@
       type="date"
       label="วัน/เดือน/ปี ที่ผสม"
       v-model="form.date_back_estrus"
-      prepend-inner-icon="mdi-calendar"
-    />
+    >
+      <template v-slot:prepend-inner>
+        <span class="em em-calendar form-emoji" aria-hidden="true"></span>
+      </template>
+    </v-text-field>
     <v-select
       :items="['กลับสัด', 'ไม่กลับสัด']"
       item-text="name"
       item-value="id"
       label="ผลการตรวจการกลับสัด"
-      prepend-inner-icon="mdi-human-male-female"
       v-model="form.is_back_estrus"
-    />
+    >
+      <template v-slot:prepend-inner>
+        <span class="em em-repeat form-emoji" aria-hidden="true"></span>
+      </template>
+    </v-select>
     <v-text-field
       v-if="form.is_back_estrus == 'ไม่กลับสัด'"
       type="date"
       label="วันที่ควรตรวจท้อง"
       v-model="form.date_test_pregnant"
-      prepend-inner-icon="mdi-calendar"
-    />
+    >
+      <template v-slot:prepend-inner>
+        <span class="em em-calendar form-emoji" aria-hidden="true"></span>
+      </template>
+    </v-text-field>
     <v-btn
       @click="saveStepOne()"
       class="w-full"
@@ -47,7 +56,7 @@ import { Ox } from "@/vuexes/ox";
 @Component({
   components: {},
 })
-export default class Food extends Vue {
+class Food extends Vue {
   breed: any = Ox.currentBreed;
   currentId: any = this.$route.query.id;
   response: boolean = true;
@@ -93,7 +102,14 @@ export default class Food extends Vue {
     return Web.convertDate(date);
   }
 }
+
+export default Food
 </script>
 
-<style>
+<style scoped>
+@import url("https://emoji-css.afeld.me/emoji.css");
+
+.form-emoji {
+  margin-right: 4px;
+}
 </style>

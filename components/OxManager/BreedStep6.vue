@@ -5,16 +5,22 @@
       type="date"
       label="วัน/เดือน/ปี ที่คลอดจริง"
       v-model="form.date_test_birth"
-      prepend-inner-icon="mdi-calendar"
-    />
+    >
+      <template v-slot:prepend-inner>
+        <span class="em em-calendar form-emoji" aria-hidden="true"></span>
+      </template>
+    </v-text-field>
     <v-select
       :items="['คลอดสำเร็จ', 'แท้ง']"
       item-text="name"
       item-value="id"
       label="ผลการคลอด"
-      prepend-inner-icon="mdi-human-male-female"
       v-model="form.result"
-    />
+    >
+      <template v-slot:prepend-inner>
+        <span class="em em-hatched_chick form-emoji" aria-hidden="true"></span>
+      </template>
+    </v-select>
     <v-btn
       @click="saveStepOne()"
       class="w-full"
@@ -41,7 +47,7 @@ import { Ox } from "@/vuexes/ox";
 @Component({
   components: {},
 })
-export default class Food extends Vue {
+class Food extends Vue {
   breed: any = Ox.currentBreed;
   currentId: any = this.breed.ox;
   response: boolean = true;
@@ -87,7 +93,14 @@ export default class Food extends Vue {
     return Web.convertDate(date);
   }
 }
+
+export default Food
 </script>
 
-<style>
+<style scoped>
+@import url("https://emoji-css.afeld.me/emoji.css");
+
+.form-emoji {
+  margin-right: 4px;
+}
 </style>

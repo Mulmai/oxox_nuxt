@@ -1,87 +1,195 @@
 <template>
-<div>
-    <v-card-title>
-        <v-icon @click="$router.go('-1')">mdi-arrow-left</v-icon>
-    </v-card-title>
-    <v-container>
-        <form @submit.prevent="saveData()">
-            <v-text-field required dense class="p-2" label="ชื่อโค" v-model="form.name" prepend-inner-icon="mdi-cow" />
-            <v-text-field dense class="p-2" type="number" label="เบอร์หู" v-model="form.ear_number" prepend-inner-icon="mdi-ear-hearing" />
-            <v-text-field dense class="p-2" type="number" label="หมายเลข NID" v-model="form.nid_number" prepend-inner-icon="mdi-numeric" />
-            <v-text-field dense class="p-2" type="number" label="หมายเลขไมโครชิป" v-model="form.chip_number" prepend-inner-icon="mdi-micro-sd" />
-            <v-text-field dense class="p-2" label="ระดับสายเลือด" v-model="form.blood" prepend-inner-icon="mdi-iv-bag" />
+    <div class="create-page">
+        <v-toolbar flat color="transparent" class="create-toolbar">
+            <v-btn icon class="mr-2" @click="$router.go(-1)">
+                <v-icon>mdi-arrow-left</v-icon>
+            </v-btn>
+            <v-toolbar-title class="font-weight-bold">เพิ่มข้อมูลโค</v-toolbar-title>
+        </v-toolbar>
 
-            <v-select required dense class="p-2" :items="choices.gene" item-text="name" item-value="id" label="พันธุ์" v-model="form.gene" prepend-inner-icon="mdi-certificate-outline" />
-            <v-text-field v-if="form.gene == 6" dense class="p-2" label="พันธุ์อื่นๆ" v-model="form.gene_ect" prepend-inner-icon="mdi-certificate" />
+        <v-container>
+            <v-card class="create-card" elevation="6" rounded="xl">
+                <v-card-text class="pa-4 pa-md-6">
+                    <div v-if="isPageLoading" class="loading-box">
+                        <v-progress-circular indeterminate color="primary" size="52" width="5" />
+                        <div class="mt-3 loading-text">กำลังเตรียมข้อมูล...</div>
+                    </div>
 
-            <v-select required dense class="p-2" :items="choices.gender" item-text="name" item-value="id" label="เพศ" v-model="form.gender" prepend-inner-icon="mdi-gender-male-female" />
-            <v-text-field v-if="form.gender == 5" dense class="p-2" label="เพศอื่นๆ" v-model="form.gender_ect" prepend-inner-icon="mdi-gender-male-female-variant" />
+                    <form v-else @submit.prevent="saveData()">
+                        <v-text-field required dense outlined class="p-2" label="ชื่อ" v-model="form.name">
+                            <template v-slot:prepend-inner>
+                                <span class="em em-cow2 form-emoji" aria-hidden="true"></span>
+                            </template>
+                        </v-text-field>
+                        <v-text-field dense outlined class="p-2" type="number" label="เบอร์หู" v-model="form.ear_number">
+                            <template v-slot:prepend-inner>
+                                <span class="em em-ear form-emoji" aria-hidden="true"></span>
+                            </template>
+                        </v-text-field>
+                        <v-text-field dense outlined class="p-2" type="number" label="หมายเลข NID" v-model="form.nid_number">
+                            <template v-slot:prepend-inner>
+                                <span class="em em-1234 form-emoji" aria-hidden="true"></span>
+                            </template>
+                        </v-text-field>
+                        <v-text-field dense outlined class="p-2" type="number" label="หมายเลขไมโครชิป" v-model="form.chip_number">
+                            <template v-slot:prepend-inner>
+                                <span class="em em-computer form-emoji" aria-hidden="true"></span>
+                            </template>
+                        </v-text-field>
+                        <v-text-field dense outlined class="p-2" label="ระดับสายเลือด" v-model="form.blood">
+                            <template v-slot:prepend-inner>
+                                <span class="em em-heavy_heart_exclamation_mark_ornament form-emoji" aria-hidden="true"></span>
+                            </template>
+                        </v-text-field>
 
-            <v-select dense class="p-2" :items="choices.origin" item-text="name" item-value="id" label="แหล่งที่มา" v-model="form.origin" prepend-inner-icon="mdi-redhat" />
-            <v-text-field v-if="form.origin == 5" dense class="p-2" label="แหล่งที่มาอื่นๆ" v-model="form.origin_ect" prepend-inner-icon="mdi-redhat" />
+                        <v-select required dense outlined class="p-2" :items="choices.gene" item-text="name" item-value="id" label="พันธุ์" v-model="form.gene">
+                            <template v-slot:prepend-inner>
+                                <span class="em em-label form-emoji" aria-hidden="true"></span>
+                            </template>
+                        </v-select>
+                        <v-text-field v-if="form.gene == 6" dense outlined class="p-2" label="พันธุ์อื่นๆ" v-model="form.gene_ect">
+                            <template v-slot:prepend-inner>
+                                <span class="em em-label form-emoji" aria-hidden="true"></span>
+                            </template>
+                        </v-text-field>
 
-            <v-select dense class="p-2" :items="choices.tooth" item-text="name" item-value="id" label="ฟัน" v-model="form.tooth" prepend-inner-icon="mdi-tooth-outline" />
-            <v-text-field dense class="p-2" type="text" label="อายุจากการทำนายฟัน" v-model="form.age_predict" prepend-inner-icon="mdi-calendar-edit" />
+                        <v-select required dense outlined class="p-2" :items="choices.gender" item-text="name" item-value="id" label="เพศ" v-model="form.gender">
+                            <template v-slot:prepend-inner>
+                                <span class="em em-female_sign form-emoji" aria-hidden="true"></span>
+                            </template>
+                        </v-select>
+                        <v-text-field v-if="form.gender == 5" dense outlined class="p-2" label="เพศอื่นๆ" v-model="form.gender_ect">
+                            <template v-slot:prepend-inner>
+                                <span class="em em-male_sign form-emoji" aria-hidden="true"></span>
+                            </template>
+                        </v-text-field>
 
-            <v-text-field required dense class="p-2" type="date" label="วันเกิด" v-model="form.birth_date" prepend-inner-icon="mdi-calendar" />
-            <!-- <v-text-field required dense class="p-2" type="number" label="จำนวน(ซี่)" v-model="form.tooth_count" prepend-inner-icon="mdi-tooth" /> -->
-            <v-text-field dense class="p-2" type="number" label="อายุ" v-model="form.age_age" prepend-inner-icon="mdi-calendar-heart" />
-            <v-text-field dense class="p-2" type="number" label="เดือน" v-model="form.age_month" prepend-inner-icon="mdi-calendar-today" />
+                        <v-select dense outlined class="p-2" :items="choices.origin" item-text="name" item-value="id" label="แหล่งที่มา" v-model="form.origin">
+                            <template v-slot:prepend-inner>
+                                <span class="em em-round_pushpin form-emoji" aria-hidden="true"></span>
+                            </template>
+                        </v-select>
+                        <v-text-field v-if="form.origin == 5" dense outlined class="p-2" label="แหล่งที่มาอื่นๆ" v-model="form.origin_ect">
+                            <template v-slot:prepend-inner>
+                                <span class="em em-round_pushpin form-emoji" aria-hidden="true"></span>
+                            </template>
+                        </v-text-field>
 
-            <v-text-field v-if="$route.query.type == 'โคขุน'" dense class="p-2" type="date" label="วันที่เข้าขุน" v-model="form.fatten_date" prepend-inner-icon="mdi-calendar-star" />
+                        <v-select dense outlined class="p-2" :items="choices.tooth" item-text="name" item-value="id" label="ฟัน" v-model="form.tooth">
+                            <template v-slot:prepend-inner>
+                                <span class="em em-tooth form-emoji" aria-hidden="true"></span>
+                            </template>
+                        </v-select>
+                        <v-text-field dense outlined class="p-2" type="text" label="อายุจากการทำนายฟัน" v-model="form.age_predict">
+                            <template v-slot:prepend-inner>
+                                <span class="em em-stopwatch form-emoji" aria-hidden="true"></span>
+                            </template>
+                        </v-text-field>
 
-            <div class="flex  p-2">
-                <v-text-field dense class="" type="number" label="รอบอก (เซนติเมตร)" v-model="form.breast" prepend-inner-icon="mdi-panorama-wide-angle" />
-                <v-btn  v-if="$route.query.type == 'โคขุน'"  class="-mt-2" small fab @click="form.weight = form.breast*2.23" color="primary">คำนวน</v-btn>
-            </div>
-            <!-- <v-text-field dense class="p-2" type="number" label="รอบอก (เซนติเมตร)" v-model="form.breast" prepend-inner-icon="mdi-panorama-wide-angle" /> -->
-            <v-text-field dense class="p-2" type="number" label="ความสูง (เซนติเมตร)" v-model="form.height" prepend-inner-icon="mdi-panorama-vertical" />
-            <v-text-field dense class="p-2" type="number" label="ความยาวลำตัว (เซนติเมตร)" v-model="form.long" prepend-inner-icon="mdi-pan-horizontal" />
+                        <v-text-field required dense outlined class="p-2" type="date" label="วันเกิด" v-model="form.birth_date">
+                            <template v-slot:prepend-inner>
+                                <span class="em em-spiral_calendar_pad form-emoji" aria-hidden="true"></span>
+                            </template>
+                        </v-text-field>
+                        <v-text-field dense outlined class="p-2" type="number" label="อายุ" v-model="form.age_age">
+                            <template v-slot:prepend-inner>
+                                <span class="em em-hourglass_flowing_sand form-emoji" aria-hidden="true"></span>
+                            </template>
+                        </v-text-field>
+                        <v-text-field dense outlined class="p-2" type="number" label="เดือน" v-model="form.age_month">
+                            <template v-slot:prepend-inner>
+                                <span class="em em-spiral_note_pad form-emoji" aria-hidden="true"></span>
+                            </template>
+                        </v-text-field>
 
-            <v-text-field v-if="$route.query.type == 'โคขุน'" dense class="p-2" type="number" label="น้ำหนักเข้าขุน (กิโลกรัม)" v-model="form.weight" prepend-inner-icon="mdi-scale" />
+                        <v-text-field v-if="$route.query.type == 'โคขุน'" dense outlined class="p-2" type="date" label="วันที่เข้าขุน" v-model="form.fatten_date">
+                            <template v-slot:prepend-inner>
+                                <span class="em em-star form-emoji" aria-hidden="true"></span>
+                            </template>
+                        </v-text-field>
 
-            <v-text-field dense class="p-2" type="date" label="วัน/เดือน/ปีที่ซื้อ" v-model="form.buy_date" prepend-inner-icon="mdi-calendar-check-outline" />
-            <v-text-field dense class="p-2" type="number" label="ราคา" v-model="form.price" prepend-inner-icon="mdi-tag" />
-            <!-- <v-select dense class="p-2" :items="choices.bsc" item-text="name" item-value="id" label="ประเมินคะแนนสภาพร่างกาย (BCS)" v-model="form.bsc" prepend-inner-icon="mdi-scoreboard-outline" /> -->
+                        <div class="flex p-2 align-center">
+                            <v-text-field dense outlined class="mr-2" type="number" label="รอบอก (เซนติเมตร)" v-model="form.breast">
+                                <template v-slot:prepend-inner>
+                                    <span class="em em-straight_ruler form-emoji" aria-hidden="true"></span>
+                                </template>
+                            </v-text-field>
+                            <v-btn v-if="$route.query.type == 'โคขุน'" class="-mt-2" small rounded color="primary" @click="form.weight = form.breast*2.23">คำนวน</v-btn>
+                        </div>
 
-            <div class="flex  p-2">
-                <v-select dense class="" :items="choices.bsc" item-text="name" item-value="id" label="ประเมินคะแนนสภาพร่างกาย (BCS)" v-model="form.bsc" prepend-inner-icon="mdi-scoreboard-outline" />
-                <v-dialog scrollable v-model="dialog" width="500">
-                    <template v-slot:activator="{ on, attrs }">
-                        <v-btn fab small class="-mt-2" color="primary" dark v-bind="attrs" v-on="on">
-                            !
+                        <v-text-field dense outlined class="p-2" type="number" label="ความสูง (เซนติเมตร)" v-model="form.height">
+                            <template v-slot:prepend-inner>
+                                <span class="em em-triangular_ruler form-emoji" aria-hidden="true"></span>
+                            </template>
+                        </v-text-field>
+                        <v-text-field dense outlined class="p-2" type="number" label="ความยาวลำตัว (เซนติเมตร)" v-model="form.long">
+                            <template v-slot:prepend-inner>
+                                <span class="em em-triangular_ruler form-emoji" aria-hidden="true"></span>
+                            </template>
+                        </v-text-field>
+
+                        <v-text-field v-if="$route.query.type == 'โคขุน'" dense outlined class="p-2" type="number" label="น้ำหนักเข้าขุน (กิโลกรัม)" v-model="form.weight">
+                            <template v-slot:prepend-inner>
+                                <span class="em em-weight_lifter form-emoji" aria-hidden="true"></span>
+                            </template>
+                        </v-text-field>
+
+                        <v-text-field dense outlined class="p-2" type="date" label="วัน/เดือน/ปีที่ซื้อ" v-model="form.buy_date">
+                            <template v-slot:prepend-inner>
+                                <span class="em em-money_with_wings form-emoji" aria-hidden="true"></span>
+                            </template>
+                        </v-text-field>
+                        <v-text-field dense outlined class="p-2" type="number" label="ราคา" v-model="form.price">
+                            <template v-slot:prepend-inner>
+                                <span class="em em-moneybag form-emoji" aria-hidden="true"></span>
+                            </template>
+                        </v-text-field>
+
+                        <div class="flex p-2 align-center">
+                            <v-select dense outlined class="mr-2" :items="choices.bsc" item-text="name" item-value="id" label="ประเมินคะแนนสภาพร่างกาย (BCS)" v-model="form.bsc">
+                                <template v-slot:prepend-inner>
+                                    <span class="em em-bar_chart form-emoji" aria-hidden="true"></span>
+                                </template>
+                            </v-select>
+                            <v-dialog scrollable v-model="dialog" width="500">
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-btn fab small class="-mt-2" color="primary" dark v-bind="attrs" v-on="on">
+                                        !
+                                    </v-btn>
+                                </template>
+
+                                <v-card>
+                                    <v-card-title class="text-xs grey lighten-2">
+                                        ประเมินคะแนนสภาพร่างกาย (BCS)
+                                    </v-card-title>
+
+                                    <v-card-text>
+                                        <center>
+                                            <img src="~/static/1.png" class="w-full" />
+                                            <img src="~/static/2.png" class="w-full h-full" />
+                                        </center>
+                                    </v-card-text>
+
+                                    <v-divider></v-divider>
+
+                                    <v-card-actions>
+                                        <v-spacer></v-spacer>
+                                        <v-btn color="error" text @click="dialog = false">
+                                            ปิด
+                                        </v-btn>
+                                    </v-card-actions>
+                                </v-card>
+                            </v-dialog>
+                        </div>
+
+                        <v-btn type='submit' rounded block large color='success' :loading="isSaving" :disabled="isSaving">
+                            บันทึก
                         </v-btn>
-                    </template>
-
-                    <v-card>
-                        <v-card-title class="text-xs grey lighten-2">
-                            ประเมินคะแนนสภาพร่างกาย (BCS)
-                        </v-card-title>
-
-                        <v-card-text>
-                            <center>
-                                <img src="~/static/1.png" class="w-full" />
-                                <img src="~/static/2.png" class="w-full h-full" />
-                            </center>
-                        </v-card-text>
-
-                        <v-divider></v-divider>
-
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn color="error" text @click="dialog = false">
-                                ปิด
-                            </v-btn>
-                        </v-card-actions>
-                    </v-card>
-                </v-dialog>
-            </div>
-
-            <v-btn type='submit' rounded block large color='success'>บันทึก</v-btn>
-        </form>
-
-    </v-container>
-</div>
+                    </form>
+                </v-card-text>
+            </v-card>
+        </v-container>
+    </div>
 </template>
 
 <script lang="ts">
@@ -102,7 +210,7 @@ import _ from 'lodash'
 
     components: {},
 })
-export default class Farm extends Vue {
+class Farm extends Vue {
 
     oxen: any = null
     form: any = {
@@ -111,6 +219,8 @@ export default class Farm extends Vue {
     group: any = null
     dialog: boolean = false;
     choices: any = {}
+    isPageLoading: boolean = true
+    isSaving: boolean = false
 
     toothVal: any = {}
     SEX: any = this.$route.query.type
@@ -131,8 +241,13 @@ export default class Farm extends Vue {
     }
 
     async created() {
-        await this.getEnv();
-        await this.getOxen();
+        this.isPageLoading = true
+        try {
+            await this.getEnv();
+            await this.getOxen();
+        } finally {
+            this.isPageLoading = false
+        }
     }
 
     @Watch('form.birth_date')
@@ -153,22 +268,59 @@ export default class Farm extends Vue {
     }
 
     async saveData() {
+        if (this.isSaving) {
+            return
+        }
+
+        this.isSaving = true
         this.form.status = "อยู่ในฟาร์ม";
         this.form.user = this.user.id
-        let ox = await Core.postHttp(`/api/v1/ox/ox/`, this.form)
-        if (ox.id) {
-            alert('บันทึกข้อมูลสำเร็จ')
-            await this.$router.go(-1)
-
+        try {
+            let ox = await Core.postHttp(`/api/v1/ox/ox/`, this.form)
+            if (ox.id) {
+                alert('บันทึกข้อมูลสำเร็จ')
+                await this.$router.go(-1)
+            }
+        } finally {
+            this.isSaving = false
         }
     }
 
 }
+
+export default Farm
 </script>
 
-<style>
-.bgh {
-    background: rgb(53, 184, 140);
-    background: linear-gradient(180deg, rgba(53, 184, 140, 1) 18%, rgba(17, 140, 87, 1) 100%);
+<style scoped>
+@import url("https://emoji-css.afeld.me/emoji.css");
+
+.create-page {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #f1f7ff 0%, #f9fcff 40%, #ffffff 100%);
+}
+
+.create-toolbar {
+    padding: 8px 8px 0;
+}
+
+.create-card {
+    border: 1px solid #dbeafe;
+}
+
+.loading-box {
+    min-height: 55vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.loading-text {
+    color: #1d4ed8;
+    font-weight: 600;
+}
+
+.form-emoji {
+    margin-right: 4px;
 }
 </style>

@@ -4,27 +4,39 @@
       type="date"
       label="วัน/เดือน/ปี ที่ผสม"
       v-model="form.date_breed"
-      prepend-inner-icon="mdi-calendar"
-    />
+    >
+      <template v-slot:prepend-inner>
+        <span class="em em-calendar form-emoji" aria-hidden="true"></span>
+      </template>
+    </v-text-field>
     <v-select
       :items="['ผสมพันธุ์ตามธรรมชาติ', 'ผสมพันธุ์เทียม']"
       item-text="name"
       item-value="id"
       label="ประเภทการผสมพันธุ์"
-      prepend-inner-icon="mdi-human-male-female"
       v-model="form.breed_type"
-    />
+    >
+      <template v-slot:prepend-inner>
+        <span class="em em-link form-emoji" aria-hidden="true"></span>
+      </template>
+    </v-select>
     <div v-if="form.breed_type == 'ผสมพันธุ์ตามธรรมชาติ'">
       <v-text-field
         label="หมายเลขพ่อพันธุ์"
         v-model="form.male_number"
-        prepend-inner-icon="mdi-human"
-      />
+      >
+        <template v-slot:prepend-inner>
+          <span class="em em-label form-emoji" aria-hidden="true"></span>
+        </template>
+      </v-text-field>
       <v-text-field
-        label="ชื่อโคพ่อพันธุ์"
+        label="ชื่อพ่อพันธุ์"
         v-model="form.male_name"
-        prepend-inner-icon="mdi-human"
-      />
+      >
+        <template v-slot:prepend-inner>
+          <span class="em em-cow2 form-emoji" aria-hidden="true"></span>
+        </template>
+      </v-text-field>
       <v-select
         required
         dense
@@ -34,25 +46,37 @@
         item-value="id"
         label="พันธุ์โค"
         v-model="form.gene"
-        prepend-inner-icon="mdi-certificate-outline"
-      />
+      >
+        <template v-slot:prepend-inner>
+          <span class="em em-label form-emoji" aria-hidden="true"></span>
+        </template>
+      </v-select>
       <v-text-field
         label="ค่าใช้จ่าย"
         v-model="form.ai_price"
-        prepend-inner-icon="mdi-human"
-      />
+      >
+        <template v-slot:prepend-inner>
+          <span class="em em-moneybag form-emoji" aria-hidden="true"></span>
+        </template>
+      </v-text-field>
     </div>
     <div v-if="form.breed_type == 'ผสมพันธุ์เทียม'">
       <v-text-field
         label="ชื่อพ่อพันธุ์"
         v-model="form.male_number"
-        prepend-inner-icon="mdi-human"
-      />
+      >
+        <template v-slot:prepend-inner>
+          <span class="em em-cow2 form-emoji" aria-hidden="true"></span>
+        </template>
+      </v-text-field>
       <v-text-field
         label="เบอร์หูพ่อพันธุ์"
         v-model="form.male_name"
-        prepend-inner-icon="mdi-human"
-      />
+      >
+        <template v-slot:prepend-inner>
+          <span class="em em-ear form-emoji" aria-hidden="true"></span>
+        </template>
+      </v-text-field>
       <v-select
         required
         dense
@@ -62,23 +86,35 @@
         item-value="id"
         label="พันธุ์โค"
         v-model="form.gene"
-        prepend-inner-icon="mdi-certificate-outline"
-      />
+      >
+        <template v-slot:prepend-inner>
+          <span class="em em-label form-emoji" aria-hidden="true"></span>
+        </template>
+      </v-select>
       <v-text-field
         label="ค่าใช้จ่าย"
         v-model="form.ai_price"
-        prepend-inner-icon="mdi-human"
-      />
+      >
+        <template v-slot:prepend-inner>
+          <span class="em em-moneybag form-emoji" aria-hidden="true"></span>
+        </template>
+      </v-text-field>
       <v-text-field
         label="เปอร์เซ็นต์เลือด"
         v-model="form.ai_blood_percent"
-        prepend-inner-icon="mdi-human"
-      />
+      >
+        <template v-slot:prepend-inner>
+          <span class="em em-heavy_heart_exclamation_mark_ornament form-emoji" aria-hidden="true"></span>
+        </template>
+      </v-text-field>
       <v-text-field
         label="ผลิตโดย"
         v-model="form.ai_by"
-        prepend-inner-icon="mdi-human"
-      />
+      >
+        <template v-slot:prepend-inner>
+          <span class="em em-factory form-emoji" aria-hidden="true"></span>
+        </template>
+      </v-text-field>
       <v-select
         required
         dense
@@ -88,8 +124,11 @@
         item-value="id"
         label="ผู้ให้บริการผสมเทียม"
         v-model="form.ai_service_maker"
-        prepend-inner-icon="mdi-certificate-outline"
-      />
+      >
+        <template v-slot:prepend-inner>
+          <span class="em em-clipboard form-emoji" aria-hidden="true"></span>
+        </template>
+      </v-select>
     </div>
     <v-btn
       @click="saveStepOne()"
@@ -117,7 +156,7 @@ import { Ox } from "@/vuexes/ox";
 @Component({
   components: {},
 })
-export default class Food extends Vue {
+class Food extends Vue {
   breed: any = Ox.currentBreed;
   currentId: any = this.$route.query.id;
   response: boolean = true;
@@ -163,7 +202,14 @@ export default class Food extends Vue {
     return Web.convertDate(date);
   }
 }
+
+export default Food
 </script>
 
-<style>
+<style scoped>
+@import url("https://emoji-css.afeld.me/emoji.css");
+
+.form-emoji {
+  margin-right: 4px;
+}
 </style>

@@ -35,7 +35,7 @@
                 <v-text-field v-if="!useTel" required v-model="formReg.username" filled rounded label="ชื่อผู้ใช้" prepend-inner-icon="mdi-face"></v-text-field>
                 <v-text-field type="password" required v-model="formReg.password" filled rounded label="รหัสผ่าน" prepend-inner-icon="mdi-form-textbox-password"></v-text-field>
                 <v-text-field type="password" required v-model="formReg.password_confirm" filled rounded label="ยืนยันรหัสผ่าน" prepend-inner-icon="mdi-form-textbox-password"></v-text-field>
-                <v-text-field required v-model="formReg.personal_id" type="number" filled rounded label="เลขบัตรประจำตัวประชาชน" :rules="rulesIDcard" counter maxlength="13" prepend-inner-icon="mdi-card-account-details-outline"></v-text-field>
+                <!-- <v-text-field required v-model="formReg.personal_id" type="number" filled rounded label="เลขบัตรประจำตัวประชาชน" :rules="rulesIDcard" counter maxlength="13" prepend-inner-icon="mdi-card-account-details-outline"></v-text-field> -->
 
                 <v-btn v-if="formReg.password == formReg.password_confirm && formReg.password != ''" rounded large color="success" class="w-full" type="submit">สมัครสมาชิก</v-btn>
             </form>

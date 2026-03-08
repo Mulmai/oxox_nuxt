@@ -15,11 +15,11 @@
             <v-btn text @click="$router.push('/auth/register')" large rounded color="primary" class="w-full font-bold">สมัครสมาชิก</v-btn>
           </form>
         </v-card-text>
-        <v-toolbar color="transparent" flat v-if="$vuetify.breakpoint.mobile != true">
+        <!-- <v-toolbar color="transparent" flat v-if="$vuetify.breakpoint.mobile != true">
           <v-btn @click="$router.push('/auth/download')" color="indigo accent-3" dark depressed rounded>Download APK</v-btn>
           <v-spacer></v-spacer>
           <Button-Google />
-        </v-toolbar>
+        </v-toolbar> -->
       </v-card>
     </div>
   </div>

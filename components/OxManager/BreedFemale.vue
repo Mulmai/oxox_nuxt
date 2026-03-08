@@ -37,28 +37,40 @@
               type="date"
               label="วัน/เดือน/ปีที่ผสมพันธุ์"
               v-model="form.date_induction"
-              prepend-inner-icon="mdi-calendar"
-            />
+            >
+              <template v-slot:prepend-inner>
+                <span class="em em-calendar form-emoji" aria-hidden="true"></span>
+              </template>
+            </v-text-field>
             <v-select
               :items="['ธรรมชาติ', 'รีดน้ำเชื้อ']"
               item-text="name"
               item-value="id"
               label="การให้น้ำเชื้อ"
               v-model="form.semen"
-              prepend-inner-icon="mdi-scale-balance"
-            />
+            >
+              <template v-slot:prepend-inner>
+                <span class="em em-test_tube form-emoji" aria-hidden="true"></span>
+              </template>
+            </v-select>
             <v-select
               :items="choices.maker"
               item-text="name"
               item-value="id"
               label="ผู้ทำ"
-              prepend-inner-icon="mdi-human-male-female"
-            />
+            >
+              <template v-slot:prepend-inner>
+                <span class="em em-clipboard form-emoji" aria-hidden="true"></span>
+              </template>
+            </v-select>
             <v-text-field
               label="Note"
               v-model="form.note"
-              prepend-inner-icon="mdi-text"
-            />
+            >
+              <template v-slot:prepend-inner>
+                <span class="em em-memo form-emoji" aria-hidden="true"></span>
+              </template>
+            </v-text-field>
 
             <v-btn class="w-full" type="submit" rounded large color="success"
               >บันทึก</v-btn
@@ -93,7 +105,7 @@ const tool = "/api/v1/tool";
 @Component({
   components: {},
 })
-export default class Food extends Vue {
+class Food extends Vue {
   currentId: any = this.$route.params.id;
   response: boolean = true;
   dialog: boolean = false;
@@ -196,7 +208,14 @@ export default class Food extends Vue {
     return Web.convertDate(date);
   }
 }
+
+export default Food
 </script>
 
-<style>
+<style scoped>
+@import url("https://emoji-css.afeld.me/emoji.css");
+
+.form-emoji {
+  margin-right: 4px;
+}
 </style>

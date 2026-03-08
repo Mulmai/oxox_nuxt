@@ -4,7 +4,7 @@
    <v-toolbar class="mt-6" color="transparent" flat>
      <h2 class="text-xl p-4 font-bold" >เมนูหลัก</h2>
      <v-spacer></v-spacer>
-
+ 
      <v-chip @click="dialog =true"
        class="ma-2"
        color="cyan"
@@ -18,31 +18,37 @@
      </v-chip>
 
    </v-toolbar>
-<!--   <h2 class="text-xl p-4 font-bold">เมนูหลัก</h2>-->
+
+    
+ 
    <v-divider class="ml-2 w-11/12"></v-divider>
+
+    <h2 class="text-xl p-4 font-bold">โค</h2>
+    <div class="flex flex-row flex-wrap justify-start">
+        <div v-for="(ox,index) in listOx" :key="index" class="w-1/2">
+          <div>
+            <MenuOX :route="ox.route" :color="ox.color" :icon="ox.icon" :name="ox.name" :text="ox.text"></MenuOX>
+          </div>
+        </div>
+    </div>
+
+      <h2 class="text-xl p-4 font-bold">กระบือ</h2>
+    <div class="flex flex-row flex-wrap justify-start">
+        <div v-for="(buffalo,index) in listBuffalo" :key="index" class="w-1/2">
+          <div>
+            <MenuOX :route="buffalo.route" :color="buffalo.color" :icon="buffalo.icon" :name="buffalo.name" :text="buffalo.text"></MenuOX>
+          </div>
+        </div>
+    </div>
+
+
     <Menu   v-for="menu,index in listPages" :key="index" :color="menu.color"
        :route="menu.route"   :name="menu.name" :text="menu.text" :icon="menu.icon"></Menu>
        <br> <br> <br>
 
       <v-dialog v-model="dialog" fullscreen persistent>
         <v-card>
-          <v-card-title>
-            <v-icon left>
-              mdi-bell
-            </v-icon> การแจ้งเตือน <v-spacer></v-spacer>
-            <v-btn color="red" rounded dark fab small @click="dialog=false"><v-icon>mdi-close</v-icon></v-btn>
-          </v-card-title>
-          <v-card-text>
-            <h2 class="font-bold">ข้อมูลการทำวัคซีน</h2>
-            <div v-for="(vaccine,index) in noti.vaccines" :key="index">
-              <Core-Menu  :name="convertDate(vaccine.date_notificate)" icon="syringe.png" :text="`วันที่ทำ `+convertDate(vaccine.date)"></Core-Menu>
-            </div>
-
-            <h2 class="font-bold">ข้อมูลการถ่ายพยาธิ</h2>
-            <div v-for="(worms,index) in noti.worms" :key="index" >
-              <Core-Menu  :name="convertDate(worms.date_notificate)" icon="parasite.png" :text="`วันที่ทำ `+convertDate(worms.date)"></Core-Menu>
-            </div>
-          </v-card-text>
+           <Core-Noti @close="dialog=false" :noti="noti"></Core-Noti>
         </v-card>
       </v-dialog>
 
@@ -71,14 +77,7 @@ layout: 'home',
 export default class MyComponent extends Vue {
   dialog:boolean = false
   text:string = 'hello world'
-   listPages:any = [
-     {
-       name:'ฟาร์ม',
-       text:'แก้ไขข้อมูล ชื่อ ที่ตั้ง',
-       icon:'004-barn.png',
-       route:'/farm/',
-       color:'border-green-500'
-     },
+   listOx:any = [
      {
        name:'พ่อพันธุ์',
        text:'เพิ่ม แก้ไข รายการโคขุนในฟาร์ม',
@@ -94,7 +93,7 @@ export default class MyComponent extends Vue {
        color:'border-pink-500'
      },
       {
-       name:'โคแรกเกิด',
+       name:'แรกเกิด',
        text:'เพิ่ม แก้ไข รายการโคขุนในฟาร์ม',
        icon:'019-cow.png',
        route:'/ox/?type=โคแรกเกิด',
@@ -107,13 +106,62 @@ export default class MyComponent extends Vue {
        route:'/ox/?type=โคขุน',
        color:'border-green-500'
      },
+   ];
+
+    listBuffalo:any = [
+     {
+       name:'พ่อพันธุ์',
+       text:'เพิ่ม แก้ไข รายการกระบือในฟาร์ม',
+       icon:'019-buffalo.png',
+       route:'/ox/?type=กระบือพ่อพันธุ์',
+       color:'border-yellow-500'
+     },
+     {
+       name:'แม่พันธุ์',
+       text:'เพิ่ม แก้ไข รายการกระบือในฟาร์ม',
+       icon:'019-buffalo.png',
+       route:'/ox/?type=กระบือแม่พันธุ์',
+       color:'border-pink-500'
+     },
+      {
+       name:'แรกเกิด',
+       text:'เพิ่ม แก้ไข รายการกระบือในฟาร์ม',
+       icon:'019-buffalo.png',
+       route:'/ox/?type=กระบือแรกเกิด',
+       color:'border-blue-500'
+     },
+     {
+       name:'กระบือรุ่น',
+       text:'เพิ่ม แก้ไข รายการกระบือในฟาร์ม',
+       icon:'019-buffalo.png',
+       route:'/ox/?type=กระบือรุ่น',
+       color:'border-red-500'
+     },
+      {
+       name:'กระบือขุน',
+       text:'เพิ่ม แก้ไข รายการกระบือในฟาร์ม',
+       icon:'019-buffalo.png',
+       route:'/ox/?type=กระบือขุน',
+       color:'border-green-500'
+     },
+   ];
+
+   listPages:any = [
+     {
+       name:'ฟาร์ม',
+       text:'แก้ไขข้อมูล ชื่อ ที่ตั้ง',
+       icon:'004-barn.png',
+       route:'/farm/',
+       color:'border-green-500'
+     }, 
      {
        name:'การจำหน่าย',
-       text:'นำโคขุนในฟาร์มจำหน่ายออก',
+       text:'นำโค/กระบือในฟาร์มจำหน่ายออก',
        icon:'040-chariot.png',
        route:'/sell/',
        color:'border-green-500'
-     },{
+     },
+     {
        name:'องค์ความรู้',
        text:'คลังข้อมูลความรู้สำหรับการเลี้ยงโคขุน',
        icon:'044-smart.png',
