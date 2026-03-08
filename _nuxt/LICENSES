@@ -32,6 +32,11 @@ PERFORMANCE OF THIS SOFTWARE.
   */
 
 
+//! moment.js
+
+//! moment.js locale configuration
+
+
 /*!
  * ApexCharts v3.26.0
  * (c) 2018-2021 Juned Chhipa
@@ -45,11 +50,6 @@ PERFORMANCE OF THIS SOFTWARE.
 /*! svg.filter.js - v2.0.2 - 2016-02-24
   * https://github.com/wout/svg.filter.js
   * Copyright (c) 2016 Wout Fierens; Licensed MIT */
-
-
-//! moment.js
-
-//! moment.js locale configuration
 
 
 /**
