@@ -51,9 +51,8 @@ export default class MyComponent extends Vue {
     this.lists = await Core.getHttp(
       `/api/v1/farmer/income/?user=${this.user.id}`
     );
-    await this.getGraphGender();
-    await this.getGraphIncome();
-    await this.getGraphOutcome();
+
+    this.buildCharts();
     this.response = true;
 
     console.log(this.lists);
@@ -71,6 +70,7 @@ export default class MyComponent extends Vue {
         enabled: false,
       },
     },
+    colors: ["#1E88E5"],
     dataLabels: {
       enabled: false,
     },
@@ -87,6 +87,16 @@ export default class MyComponent extends Vue {
     xaxis: {
       categories: [],
     },
+    yaxis: {
+      labels: {
+        formatter: (value: number) => `${value.toLocaleString()}`,
+      },
+    },
+    tooltip: {
+      y: {
+        formatter: (value: number) => `฿ ${value.toLocaleString()}`,
+      },
+    },
   };
   chartIncome: any = {
     chart: {
@@ -96,7 +106,7 @@ export default class MyComponent extends Vue {
         enabled: false,
       },
     },
-    colors: ["#546E7A"],
+    colors: ["#2E7D32"],
     dataLabels: {
       enabled: false,
     },
@@ -122,7 +132,7 @@ export default class MyComponent extends Vue {
         enabled: false,
       },
     },
-    colors: ["#546E7A"],
+    colors: ["#E53935"],
     dataLabels: {
       enabled: false,
     },
@@ -140,66 +150,49 @@ export default class MyComponent extends Vue {
       categories: [],
     },
   };
-  async getGraphGender() {
-    let result: any = _.chain(this.lists)
-      // Group the elements of Array based on `color` property
+  getGroupedByDate() {
+    const grouped = _.chain(this.lists)
       .groupBy("date")
-      // `key` is group's name (color), `value` is the array of objects
       .map((value, key) => ({ date: key, data: value }))
+      .sortBy("date")
       .value();
-    let labels = [];
-    let series = [];
-    for (let i = 0; i < result.length; i++) {
-      let income = _.sumBy(_.filter(result[i].data, { type: true }), "value");
-      let outcome = _.sumBy(_.filter(result[i].data, { type: false }), "value");
-      labels.push(result[i].date);
-      series.push(income - outcome);
-    }
-    this.series.push({
-      name: "รายได้",
-      data: series,
-    });
+    return grouped;
+  }
+
+  buildCharts() {
+    const grouped = this.getGroupedByDate();
+    const labels = grouped.map((row: any) => row.date);
+
+    const incomeData = grouped.map((row: any) =>
+      _.sumBy(_.filter(row.data, { type: true }), "value")
+    );
+    const outcomeData = grouped.map((row: any) =>
+      _.sumBy(_.filter(row.data, { type: false }), "value")
+    );
+    const netData = incomeData.map((inc: number, idx: number) => inc - outcomeData[idx]);
+
+    this.series = [
+      {
+        name: "สุทธิ (รายรับ - รายจ่าย)",
+        data: netData,
+      },
+    ];
     this.chartOptions.xaxis.categories = labels;
-  }
-  async getGraphIncome() {
-    let result: any = _.chain(this.lists)
-      // Group the elements of Array based on `color` property
-      .groupBy("date")
-      // `key` is group's name (color), `value` is the array of objects
-      .map((value, key) => ({ date: key, data: value }))
-      .value();
-    let labels = [];
-    let seriesIncome = [];
-    for (let i = 0; i < result.length; i++) {
-      let income = _.sumBy(_.filter(result[i].data, { type: true }), "value");
-      labels.push(result[i].date);
-      seriesIncome.push(income);
-    }
-    this.seriesIncome.push({
-      name: "รายรับ",
-      data: seriesIncome,
-    });
+
+    this.seriesIncome = [
+      {
+        name: "รายรับ",
+        data: incomeData,
+      },
+    ];
     this.chartIncome.xaxis.categories = labels;
-  }
-  async getGraphOutcome() {
-    let result: any = _.chain(this.lists)
-      // Group the elements of Array based on `color` property
-      .groupBy("date")
-      // `key` is group's name (color), `value` is the array of objects
-      .map((value, key) => ({ date: key, data: value }))
-      .value();
-    let labels = [];
-    let seriesOutcome = [];
-    for (let i = 0; i < result.length; i++) {
-      let outcome = _.sumBy(_.filter(result[i].data, { type: false }), "value");
-      labels.push(result[i].date);
-      seriesOutcome.push(outcome);
-    }
-    // this.seriesOutcome = seriesOutcome;
-    this.seriesOutcome.push({
-      name: "รายจ่าย",
-      data: seriesOutcome,
-    });
+
+    this.seriesOutcome = [
+      {
+        name: "รายจ่าย",
+        data: outcomeData,
+      },
+    ];
     this.chartOutcome.xaxis.categories = labels;
   }
 }
